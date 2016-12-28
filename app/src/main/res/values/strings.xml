@@ -3,4 +3,6 @@
     <string name="title_activity_maps">Road</string>
     <string name="longitude_label">Longitude: %s</string>
     <string name="latitude_label">Latitude: %s</string>
+    <string name="login">Please Login</string>
+    <string name="registration">Registration</string>
 </resources>
