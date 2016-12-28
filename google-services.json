@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "552647789390",
+    "firebase_url": "https://calico-doroad.firebaseio.com",
+    "project_id": "calico-doroad",
+    "storage_bucket": "calico-doroad.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:552647789390:android:e97ef45160442a2b",
+        "android_client_info": {
+          "package_name": "com.palisadoes.doroad"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "552647789390-rpm58ao415v45r3cqbhm5ksgvmg70s7q.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDgtOfMJe3vYJ6sUDMV8w-vCG8okI7KZ3M"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
