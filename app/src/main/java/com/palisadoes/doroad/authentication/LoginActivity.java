@@ -8,6 +8,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import com.google.firebase.auth.FirebaseAuth;
 import com.palisadoes.doroad.R;
 
 /**
@@ -19,6 +20,9 @@ public class LoginActivity extends Activity implements View.OnClickListener{
     Button login_button;
     TextView create_account;
     EditText email,password;
+    //defining firebaseauth object
+    private FirebaseAuth firebaseAuth;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -32,6 +36,9 @@ public class LoginActivity extends Activity implements View.OnClickListener{
         create_account.setOnClickListener(this);
         email.setOnClickListener(this);
         password.setOnClickListener(this);
+        //initializing firebase auth object
+        firebaseAuth = FirebaseAuth.getInstance();
+
     }
 
     @Override
