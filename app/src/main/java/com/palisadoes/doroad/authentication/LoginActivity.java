@@ -52,10 +52,12 @@ public class LoginActivity extends Activity implements View.OnClickListener{
         }
     }
     private void showProgressDialog(){
-        final ProgressDialog progressDialog = new ProgressDialog(LoginActivity.this,
-                R.style.AppTheme);
+        final ProgressDialog progressDialog = new ProgressDialog(LoginActivity.this, R.style.AppTheme);
         progressDialog.setIndeterminate(true);
         progressDialog.setMessage("Athenticating...");
         progressDialog.show();
+    }
+    private void gotoRegistrationActivity(){
+
     }
 }
