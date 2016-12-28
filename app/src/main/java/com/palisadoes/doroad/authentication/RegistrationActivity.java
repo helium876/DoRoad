@@ -1,6 +1,7 @@
 package com.palisadoes.doroad.authentication;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -50,5 +51,12 @@ public class RegistrationActivity extends Activity implements View.OnClickListen
                 break;
             }
         }
+    }
+    private void showProgressDialog(){
+        final ProgressDialog progressDialog = new ProgressDialog(RegistrationActivity.this,
+                R.style.AppTheme);
+        progressDialog.setIndeterminate(true);
+        progressDialog.setMessage("Creating Account...");
+        progressDialog.show();
     }
 }

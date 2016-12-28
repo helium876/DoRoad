@@ -1,6 +1,7 @@
 package com.palisadoes.doroad.authentication;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -49,5 +50,12 @@ public class LoginActivity extends Activity implements View.OnClickListener{
                 break;
             }
         }
+    }
+    private void showProgressDialog(){
+        final ProgressDialog progressDialog = new ProgressDialog(LoginActivity.this,
+                R.style.AppTheme);
+        progressDialog.setIndeterminate(true);
+        progressDialog.setMessage("Athenticating...");
+        progressDialog.show();
     }
 }
