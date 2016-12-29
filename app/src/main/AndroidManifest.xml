@@ -33,7 +33,10 @@
              You can define the keys for the debug and release targets in src/debug/ and src/release/. 
         -->
         <activity android:name=".authentication.LoginActivity"/>
-        <activity android:name=".authentication.RegistrationActivity"/>
+        <activity android:name=".authentication.RegistrationActivity"
+            android:parentActivityName=".authentication.LoginActivity">
+            <meta-data android:name="android.support.PARENT_ACTIVITY" android:value=".authentication.LoginActivity"/>
+        </activity>
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/google_maps_key" />

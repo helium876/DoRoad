@@ -26,6 +26,7 @@ public class RegistrationActivity extends Activity implements View.OnClickListen
     Button register_button;
     TextView login_account;
     EditText email, password;
+     ProgressDialog progressDialog;
     //defining firebaseauth object
     private FirebaseAuth firebaseAuth;
     @Override
@@ -49,6 +50,7 @@ public class RegistrationActivity extends Activity implements View.OnClickListen
     public void onClick(View v) {
         switch (v.getId()){
             case R.id.btn_register:{
+                registerUser();
                 break;
             }
             case R.id.input_email:{
@@ -63,7 +65,7 @@ public class RegistrationActivity extends Activity implements View.OnClickListen
         }
     }
     private void showProgressDialog(){
-        final ProgressDialog progressDialog = new ProgressDialog(RegistrationActivity.this,
+     progressDialog = new ProgressDialog(RegistrationActivity.this,
                 R.style.AppTheme);
         progressDialog.setIndeterminate(true);
         progressDialog.setMessage("Creating Account...");
@@ -73,6 +75,7 @@ public class RegistrationActivity extends Activity implements View.OnClickListen
 
         String user_email = email.getText().toString();
         String user_password = password.getText().toString();
+        showProgressDialog();
         //creating a new user
         firebaseAuth.createUserWithEmailAndPassword(user_email, user_password)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
@@ -87,7 +90,7 @@ public class RegistrationActivity extends Activity implements View.OnClickListen
                             //display some message here
                             Log.d(TAG,task.getException().getMessage());
                         }
-
+                            if (progressDialog!=null) progressDialog.dismiss();
                     }
                 });
 
