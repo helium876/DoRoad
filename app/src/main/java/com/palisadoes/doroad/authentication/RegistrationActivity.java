@@ -4,7 +4,11 @@ import android.app.Activity;
 import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.v4.app.NavUtils;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -17,11 +21,13 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.palisadoes.doroad.R;
 
+import static com.palisadoes.doroad.R.id.main_toolbar;
+
 /**
  * Created by root on 12/27/16.
  */
 
-public class RegistrationActivity extends Activity implements View.OnClickListener {
+public class RegistrationActivity extends AppCompatActivity implements View.OnClickListener {
     private static final String TAG = "Droid";
     Button register_button;
     TextView login_account;
@@ -29,6 +35,7 @@ public class RegistrationActivity extends Activity implements View.OnClickListen
      ProgressDialog progressDialog;
     //defining firebaseauth object
     private FirebaseAuth firebaseAuth;
+    Toolbar toolbar = null;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -44,6 +51,13 @@ public class RegistrationActivity extends Activity implements View.OnClickListen
         password.setOnClickListener(this);
         //initializing firebase auth object
         firebaseAuth = FirebaseAuth.getInstance();
+
+        toolbar = (Toolbar) findViewById(main_toolbar);
+        setSupportActionBar(toolbar);
+        toolbar.setTitle("DoRoad");
+        getSupportActionBar().setHomeButtonEnabled(true);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
     }
 
     @Override
@@ -94,5 +108,16 @@ public class RegistrationActivity extends Activity implements View.OnClickListen
                     }
                 });
 
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            // Respond to the action bar's Up/Home button
+            case android.R.id.home:
+                NavUtils.navigateUpFromSameTask(this);
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 }
