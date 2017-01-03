@@ -159,4 +159,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     }
                 });
     }
+    private void dismissProgressDialog(){
+        new android.os.Handler().postDelayed(
+                new Runnable() {
+                    public void run() {
+
+                        progressDialog.dismiss();
+                    }
+                }, 3000);
+    }
 }

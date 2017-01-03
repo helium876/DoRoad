@@ -117,4 +117,13 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
                 break;
         }
     }
+    private void dismissProgressDialog(){
+        new android.os.Handler().postDelayed(
+                new Runnable() {
+                    public void run() {
+
+                        progressDialog.dismiss();
+                    }
+                }, 3000);
+    }
 }
