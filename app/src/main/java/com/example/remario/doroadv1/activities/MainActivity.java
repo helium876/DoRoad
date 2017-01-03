@@ -114,7 +114,7 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
         }
     }
     private void showProgressDialog(){
-        final ProgressDialog progressDialog = new ProgressDialog(MainActivity.this,
+        progressDialog = new ProgressDialog(MainActivity.this,
                 R.style.AppTheme_PopupOverlay);
         progressDialog.setIndeterminate(true);
         progressDialog.setMessage("Authenticating...");
@@ -125,5 +125,8 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
         Intent intent = new Intent(MainActivity.this,RegisterActivity.class);
         intent.setFlags(FLAG_ACTIVITY_NO_HISTORY);
         startActivity(intent);
+    }
+    private void loginUser(){
+
     }
 }

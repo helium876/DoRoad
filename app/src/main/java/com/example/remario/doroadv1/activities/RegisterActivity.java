@@ -1,19 +1,34 @@
 package com.example.remario.doroadv1.activities;
 
+import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.NavUtils;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.TextView;
 
 import com.example.remario.doroadv1.R;
+import com.google.firebase.auth.FirebaseAuth;
 
 /**
  * Created by remario on 1/2/17.
  */
 
-public class RegisterActivity extends AppCompatActivity {
+public class RegisterActivity extends AppCompatActivity  implements View.OnClickListener{
+    private ProgressDialog progressDialog;
+    private FirebaseAuth mAuth;
+    private FirebaseAuth.AuthStateListener mAuthListener;
+    private TextInputLayout email_wrapper,password_wrapper,name_wrapper;
+    TextView link_login;
+    Button register;
+    EditText email,password,name;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -22,6 +37,18 @@ public class RegisterActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
+        email_wrapper = (TextInputLayout) findViewById(R.id.user_email_wrapper_register);
+        password_wrapper = (TextInputLayout) findViewById(R.id.user_passowrd_wrapper_register);
+        name_wrapper = (TextInputLayout) findViewById(R.id.user_name_wrapper_register);
+        email = email_wrapper.getEditText();
+        password = password_wrapper.getEditText();
+        name = name_wrapper.getEditText();
+
+        register = (Button) findViewById(R.id.btn_signup);
+        link_login = (TextView) findViewById(R.id.link_login);
+
+        register.setOnClickListener(this);
+        link_login.setOnClickListener(this);
 
     }
 
@@ -36,4 +63,30 @@ public class RegisterActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    private void registerUser()
+    {
+
+    }
+    private void showProgressDialog(){
+      progressDialog = new ProgressDialog(RegisterActivity.this,
+                R.style.AppTheme_PopupOverlay);
+        progressDialog.setIndeterminate(true);
+        progressDialog.setMessage("Authenticating...");
+        progressDialog.show();
+    }
+
+    @Override
+    public void onClick(View v) {
+            switch (v.getId())
+            {
+                case R.id.link_login:{
+                    break;
+                }
+                case R.id.btn_signup:{
+                    registerUser();
+                    break;
+                }
+                default:break;
+            }
+    }
 }
