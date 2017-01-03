@@ -17,8 +17,12 @@ import android.view.MenuItem;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.remario.doroadv1.R;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
@@ -26,14 +30,15 @@ import constants.Constants;
 
 import static android.content.Intent.FLAG_ACTIVITY_NO_HISTORY;
 
-public class MainActivity extends AppCompatActivity  implements View.OnClickListener{
+public class MainActivity extends AppCompatActivity implements View.OnClickListener {
     private FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener mAuthListener;
-    private TextInputLayout email_wrapper,password_wrapper;
+    private TextInputLayout email_wrapper, password_wrapper;
     TextView link_register;
     Button login;
-    EditText email,password;
+    EditText email, password;
     private ProgressDialog progressDialog;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -87,11 +92,13 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
 
         return super.onOptionsItemSelected(item);
     }
+
     @Override
     public void onStart() {
         super.onStart();
         mAuth.addAuthStateListener(mAuthListener);
     }
+
     @Override
     public void onStop() {
         super.onStop();
@@ -102,31 +109,54 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
 
     @Override
     public void onClick(View v) {
-        switch (v.getId()){
-            case R.id.link_signup:{
+        switch (v.getId()) {
+            case R.id.link_signup: {
                 gotoRegisterActivity();
                 break;
             }
-            case R.id.btn_login:{
+            case R.id.btn_login: {
                 break;
             }
-            default:break;
+            default:
+                break;
         }
     }
-    private void showProgressDialog(){
+
+    private void showProgressDialog() {
         progressDialog = new ProgressDialog(MainActivity.this,
                 R.style.AppTheme_PopupOverlay);
         progressDialog.setIndeterminate(true);
         progressDialog.setMessage("Authenticating...");
         progressDialog.show();
     }
-    private void gotoRegisterActivity()
-    {
-        Intent intent = new Intent(MainActivity.this,RegisterActivity.class);
+
+    private void gotoRegisterActivity() {
+        Intent intent = new Intent(MainActivity.this, RegisterActivity.class);
         intent.setFlags(FLAG_ACTIVITY_NO_HISTORY);
         startActivity(intent);
     }
-    private void loginUser(){
 
+    private void loginUser() {
+        String name_, email_, password_;
+        email_ = email.getText().toString();
+        password_ = password.getText().toString();
+        mAuth.signInWithEmailAndPassword(email_, password_)
+                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        Log.d(Constants.LOGGER, "signInWithEmail:onComplete:" + task.isSuccessful());
+
+                        // If sign in fails, display a message to the user. If sign in succeeds
+                        // the auth state listener will be notified and logic to handle the
+                        // signed in user can be handled in the listener.
+                        if (!task.isSuccessful()) {
+                            Log.w(Constants.LOGGER, "signInWithEmail", task.getException());
+                            Toast.makeText(MainActivity.this, "Authentication failed.",
+                                    Toast.LENGTH_SHORT).show();
+                        }
+
+                        // ...
+                    }
+                });
     }
 }
