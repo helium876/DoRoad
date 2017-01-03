@@ -3,6 +3,8 @@ package com.example.remario.doroadv1.activities;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.provider.SyncStateContract;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
@@ -115,6 +117,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 break;
             }
             case R.id.btn_login: {
+                loginUser();
                 break;
             }
             default:
@@ -139,11 +142,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private void loginUser() {
         String name_, email_, password_;
         email_ = email.getText().toString();
+        showProgressDialog();
+        //dismissProgressDialog();
         password_ = password.getText().toString();
         mAuth.signInWithEmailAndPassword(email_, password_)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
+
                         Log.d(Constants.LOGGER, "signInWithEmail:onComplete:" + task.isSuccessful());
 
                         // If sign in fails, display a message to the user. If sign in succeeds
@@ -155,7 +161,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                                     Toast.LENGTH_SHORT).show();
                         }
 
-                        // ...
+
+                        new Handler(Looper.getMainLooper()).post(new Runnable() {
+                            @Override
+                            public void run() {
+                                progressDialog.dismiss();
+                            }
+                        });
                     }
                 });
     }

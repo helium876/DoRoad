@@ -2,6 +2,8 @@ package com.example.remario.doroadv1.activities;
 
 import android.app.ProgressDialog;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TextInputLayout;
@@ -76,6 +78,7 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
         name_ = name.getText().toString();
         email_ = email.getText().toString();
         password_ = password.getText().toString();
+        showProgressDialog();
         mAuth.createUserWithEmailAndPassword(email_, password_)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                     @Override
@@ -90,7 +93,12 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
                                     Toast.LENGTH_SHORT).show();
                         }
 
-                        // ...
+                        new Handler(Looper.getMainLooper()).post(new Runnable() {
+                            @Override
+                            public void run() {
+                                progressDialog.dismiss();
+                            }
+                        });
                     }
                 });
     }
@@ -107,6 +115,7 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.link_login: {
+                finish();
                 break;
             }
             case R.id.btn_signup: {
