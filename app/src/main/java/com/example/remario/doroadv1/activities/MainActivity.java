@@ -12,6 +12,7 @@ import android.support.design.widget.Snackbar;
 import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.view.Menu;
@@ -127,7 +128,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private void showProgressDialog() {
         progressDialog = new ProgressDialog(MainActivity.this,
-                R.style.AppTheme_PopupOverlay);
+                ProgressDialog.THEME_HOLO_LIGHT);
         progressDialog.setIndeterminate(true);
         progressDialog.setMessage("Authenticating...");
         progressDialog.show();
@@ -140,8 +141,19 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void loginUser() {
-        String name_, email_, password_;
+        String  email_, password_;
         email_ = email.getText().toString();
+        password_=password.getText().toString();
+        //checking if email and passwords are empty
+        if(TextUtils.isEmpty(email_)){
+            Toast.makeText(this,"Please enter email",Toast.LENGTH_LONG).show();
+            return;
+        }
+
+        if(TextUtils.isEmpty(password_)){
+            Toast.makeText(this,"Please enter password",Toast.LENGTH_LONG).show();
+            return;
+        }
         showProgressDialog();
         //dismissProgressDialog();
         password_ = password.getText().toString();
@@ -158,6 +170,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         if (!task.isSuccessful()) {
                             Log.w(Constants.LOGGER, "signInWithEmail", task.getException());
                             Toast.makeText(MainActivity.this, "Authentication failed.",
+                                    Toast.LENGTH_SHORT).show();
+                        }else{
+                            Toast.makeText(MainActivity.this, "Successful.",
                                     Toast.LENGTH_SHORT).show();
                         }
 

@@ -10,6 +10,7 @@ import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.NavUtils;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
@@ -43,10 +44,10 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setDisplayShowHomeEnabled(true);
+        //    Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        //  setSupportActionBar(toolbar);
+        // getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        //getSupportActionBar().setDisplayShowHomeEnabled(true);
         email_wrapper = (TextInputLayout) findViewById(R.id.user_email_wrapper_register);
         password_wrapper = (TextInputLayout) findViewById(R.id.user_passowrd_wrapper_register);
         name_wrapper = (TextInputLayout) findViewById(R.id.user_name_wrapper_register);
@@ -74,22 +75,36 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
     }
 
     private void registerUser() {
-        String name_,email_,password_;
+        String name_, email_, password_;
         name_ = name.getText().toString();
         email_ = email.getText().toString();
         password_ = password.getText().toString();
+        //checking if email and passwords are empty
+        if(TextUtils.isEmpty(email_)){
+            Toast.makeText(this,"Please enter email",Toast.LENGTH_LONG).show();
+            return;
+        }
+
+        if(TextUtils.isEmpty(password_)){
+            Toast.makeText(this,"Please enter password",Toast.LENGTH_LONG).show();
+            return;
+        }
+        Log.d(Constants.LOGGER, " email: " + email_ + " password: " + password_);
         showProgressDialog();
         mAuth.createUserWithEmailAndPassword(email_, password_)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
-                        Log.d(Constants.LOGGER, "createUserWithEmail:onComplete:" + task.isSuccessful());
+                        //Log.d(Constants.LOGGER, "createUserWithEmail:onComplete:" + task.isSuccessful());
 
                         // If sign in fails, display a message to the user. If sign in succeeds
                         // the auth state listener will be notified and logic to handle the
                         // signed in user can be handled in the listener.
                         if (!task.isSuccessful()) {
                             Toast.makeText(RegisterActivity.this, "Authentication failed.",
+                                    Toast.LENGTH_SHORT).show();
+                        }else{
+                            Toast.makeText(RegisterActivity.this, "user created.",
                                     Toast.LENGTH_SHORT).show();
                         }
 
@@ -105,9 +120,9 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
 
     private void showProgressDialog() {
         progressDialog = new ProgressDialog(RegisterActivity.this,
-                R.style.AppTheme_PopupOverlay);
+                ProgressDialog.THEME_DEVICE_DEFAULT_DARK);
         progressDialog.setIndeterminate(true);
-        progressDialog.setMessage("Authenticating...");
+        progressDialog.setMessage("Please wait...");
         progressDialog.show();
     }
 
@@ -126,7 +141,8 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
                 break;
         }
     }
-    private void dismissProgressDialog(){
+
+    private void dismissProgressDialog() {
         new android.os.Handler().postDelayed(
                 new Runnable() {
                     public void run() {
