@@ -1,6 +1,7 @@
 package com.palisadoes.doroad;
 
 import android.Manifest;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -12,9 +13,13 @@ import android.os.Bundle;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -24,6 +29,10 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+
+import constants.Constants;
 
 
 public class MainActivity extends AppCompatActivity
@@ -31,8 +40,16 @@ public class MainActivity extends AppCompatActivity
         LocationListener {
 
     private TextView lngText, latText;
-
+    private FirebaseAuth mAuth;
+    private FirebaseAuth.AuthStateListener mAuthListener;
     private GoogleApiClient mGoogleApiClient;
+    private boolean isSignedIn;
+    private TextInputLayout email_wrapper, password_wrapper;
+    TextView link_register;
+    Button login;
+    EditText email, password;
+    private ProgressDialog progressDialog;
+
 
     LocationRequest mLocationRequest;
 
@@ -46,8 +63,23 @@ public class MainActivity extends AppCompatActivity
             return;
         }
 
-        initTextViews();
-        setTextViews();
+        mAuth = FirebaseAuth.getInstance();
+        mAuthListener = new FirebaseAuth.AuthStateListener() {
+            @Override
+            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
+                FirebaseUser user = firebaseAuth.getCurrentUser();
+                if (user != null) {
+                    // User is signed in
+                    isSignedIn = true;
+                    Log.d(Constants.LOGGER, "onAuthStateChanged:signed_in:" + user.getUid());
+                } else {
+                    // User is signed out
+                    isSignedIn = false;
+                    Log.d(Constants.LOGGER, "onAuthStateChanged:signed_out");
+                }
+
+            }
+        };
         checkPermissions();
     }
 
@@ -58,16 +90,19 @@ public class MainActivity extends AppCompatActivity
             mGoogleApiClient.disconnect();
         }
     }
-
-    private void initTextViews() {
-        lngText = (TextView) findViewById(R.id.longitude);
-        latText = (TextView) findViewById(R.id.latitude);
+    private void initViews()
+    {
+        email_wrapper = (TextInputLayout) findViewById(R.id.user_email_wrapper);
+        password_wrapper = (TextInputLayout) findViewById(R.id.user_password_wrapper);
+        email = email_wrapper.getEditText();
+        password = password_wrapper.getEditText();
+        login = (Button) findViewById(R.id.btn_login);
+        link_register = (TextView) findViewById(R.id.link_signup);
     }
 
-    private void setTextViews() {
-        latText.setText(getString(R.string.latitude_label, ""));
-        lngText.setText(getString(R.string.longitude_label, ""));
-    }
+
+
+
 
     private void checkPermissions() {
         if (isPermissionGranted(this, Manifest.permission.ACCESS_FINE_LOCATION)) {
@@ -130,8 +165,8 @@ public class MainActivity extends AppCompatActivity
             double latitude = location.getLatitude();
             double longitude = location.getLongitude();
 
-            latText.setText(getString(R.string.latitude_label, latitude));
-            lngText.setText(getString(R.string.longitude_label, longitude));
+            //latText.setText(getString(R.string.latitude_label, latitude));
+            //lngText.setText(getString(R.string.longitude_label, longitude));
         }
     }
 

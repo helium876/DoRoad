@@ -15,14 +15,6 @@
       },
       "oauth_client": [
         {
-          "client_id": "552647789390-aep88211526g39nrhkbseov0dceteiuf.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.palisadoes.doroad",
-            "certificate_hash": "C100DEFA4D0EE83FAE0D5092DCEB3E525B880C5B"
-          }
-        },
-        {
           "client_id": "552647789390-rpm58ao415v45r3cqbhm5ksgvmg70s7q.apps.googleusercontent.com",
           "client_type": 3
         }
@@ -37,13 +29,8 @@
           "status": 1
         },
         "appinvite_service": {
-          "status": 2,
-          "other_platform_oauth_client": [
-            {
-              "client_id": "552647789390-rpm58ao415v45r3cqbhm5ksgvmg70s7q.apps.googleusercontent.com",
-              "client_type": 3
-            }
-          ]
+          "status": 1,
+          "other_platform_oauth_client": []
         },
         "ads_service": {
           "status": 2
