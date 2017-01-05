@@ -1,6 +1,7 @@
 package com.palisadoes.doroad;
 
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
@@ -29,20 +30,25 @@ import constants.Constants;
 import static android.content.Intent.FLAG_ACTIVITY_NO_HISTORY;
 
 public class LoginActivity extends AppCompatActivity implements View.OnClickListener {
+
+
     private FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener mAuthListener;
     private TextInputLayout email_wrapper, password_wrapper;
-    TextView link_register;
-    Button login;
-    EditText email, password;
+    private TextView link_register;
+    private Button login;
+    private EditText email, password;
     private ProgressDialog progressDialog;
+    private Context context;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_login);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        context = this;
 
         mAuth = FirebaseAuth.getInstance();
         mAuthListener = new FirebaseAuth.AuthStateListener() {
@@ -51,22 +57,26 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                 FirebaseUser user = firebaseAuth.getCurrentUser();
                 if (user != null) {
                     // User is signed in
+                    Toast.makeText(context,"User present",Toast.LENGTH_SHORT).show();
                     Log.d(Constants.LOGGER, "onAuthStateChanged:signed_in:" + user.getUid());
+
+                    //go straight to main activity
+                    Intent intent = new Intent(context,MainActivity.class);
+                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    context.startActivity(intent);
+                    finish();
+
                 } else {
                     // User is signed out
+                    Toast.makeText(context,"User not present",Toast.LENGTH_SHORT).show();
                     Log.d(Constants.LOGGER, "onAuthStateChanged:signed_out");
                 }
 
             }
         };
-        email_wrapper = (TextInputLayout) findViewById(R.id.user_email_wrapper);
-        password_wrapper = (TextInputLayout) findViewById(R.id.user_password_wrapper);
-        email = email_wrapper.getEditText();
-        password = password_wrapper.getEditText();
-        login = (Button) findViewById(R.id.btn_login);
-        link_register = (TextView) findViewById(R.id.link_signup);
-        login.setOnClickListener(this);
-        link_register.setOnClickListener(this);
+
+        initViews();
+
     }
 
     @Override
@@ -89,6 +99,18 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    private void initViews()
+    {
+        email_wrapper = (TextInputLayout) findViewById(R.id.user_email_wrapper);
+        password_wrapper = (TextInputLayout) findViewById(R.id.user_password_wrapper);
+        email = email_wrapper.getEditText();
+        password = password_wrapper.getEditText();
+        login = (Button) findViewById(R.id.btn_login);
+        link_register = (TextView) findViewById(R.id.link_signup);
+        login.setOnClickListener(this);
+        link_register.setOnClickListener(this);
     }
 
     @Override
@@ -169,6 +191,10 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                         }else{
                             Toast.makeText(LoginActivity.this, "Successful.",
                                     Toast.LENGTH_SHORT).show();
+                            Intent intent = new Intent(context,MainActivity.class);
+                            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                            context.startActivity(intent);
+                            finish();
                         }
 
 
@@ -181,13 +207,5 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                     }
                 });
     }
-    private void dismissProgressDialog(){
-        new android.os.Handler().postDelayed(
-                new Runnable() {
-                    public void run() {
 
-                        progressDialog.dismiss();
-                    }
-                }, 3000);
-    }
 }

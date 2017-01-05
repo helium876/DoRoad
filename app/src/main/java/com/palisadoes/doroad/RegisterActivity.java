@@ -1,6 +1,8 @@
 package com.palisadoes.doroad;
 
 import android.app.ProgressDialog;
+import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -29,13 +31,16 @@ import constants.Constants;
  */
 
 public class RegisterActivity extends AppCompatActivity implements View.OnClickListener {
+
+
     private ProgressDialog progressDialog;
     private FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener mAuthListener;
     private TextInputLayout email_wrapper, password_wrapper, name_wrapper;
-    TextView link_login;
-    Button register;
-    EditText email, password, name;
+    private TextView link_login;
+    private Button register;
+    private EditText email, password, name;
+    private Context context;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -51,6 +56,8 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
         email = email_wrapper.getEditText();
         password = password_wrapper.getEditText();
         name = name_wrapper.getEditText();
+
+        context = this;
 
         register = (Button) findViewById(R.id.btn_signup);
         link_login = (TextView) findViewById(R.id.link_login);
@@ -103,6 +110,10 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
                         }else{
                             Toast.makeText(RegisterActivity.this, "user created.",
                                     Toast.LENGTH_SHORT).show();
+                            Intent intent = new Intent(context,MainActivity.class);
+                            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                            context.startActivity(intent);
+                            finish();
                         }
 
                         new Handler(Looper.getMainLooper()).post(new Runnable() {
@@ -139,13 +150,4 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
         }
     }
 
-    private void dismissProgressDialog() {
-        new android.os.Handler().postDelayed(
-                new Runnable() {
-                    public void run() {
-
-                        progressDialog.dismiss();
-                    }
-                }, 3000);
-    }
 }

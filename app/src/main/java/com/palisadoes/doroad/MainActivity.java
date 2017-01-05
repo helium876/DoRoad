@@ -5,8 +5,6 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.location.Address;
-import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
@@ -18,6 +16,7 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -31,6 +30,9 @@ import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 import constants.Constants;
 
@@ -43,15 +45,11 @@ public class MainActivity extends AppCompatActivity
     private FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener mAuthListener;
     private GoogleApiClient mGoogleApiClient;
-    private boolean isSignedIn;
-    private TextInputLayout email_wrapper, password_wrapper;
-    TextView link_register;
-    Button login;
-    EditText email, password;
-    private ProgressDialog progressDialog;
-
-
-    LocationRequest mLocationRequest;
+    private boolean isSignedIn=false;
+    private Context context;
+    private Button button;
+    private Location mLocation;
+    private LocationRequest mLocationRequest;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,6 +61,8 @@ public class MainActivity extends AppCompatActivity
             return;
         }
 
+        context = this;
+
         mAuth = FirebaseAuth.getInstance();
         mAuthListener = new FirebaseAuth.AuthStateListener() {
             @Override
@@ -71,16 +71,35 @@ public class MainActivity extends AppCompatActivity
                 if (user != null) {
                     // User is signed in
                     isSignedIn = true;
+                    Toast.makeText(context,"User present main",Toast.LENGTH_SHORT).show();
                     Log.d(Constants.LOGGER, "onAuthStateChanged:signed_in:" + user.getUid());
                 } else {
                     // User is signed out
                     isSignedIn = false;
+                    Toast.makeText(context,"User not present main",Toast.LENGTH_SHORT).show();
                     Log.d(Constants.LOGGER, "onAuthStateChanged:signed_out");
                 }
 
             }
         };
         checkPermissions();
+
+        initViews();
+
+        button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+               getCoords(mLocation);
+            }
+        });
+    }
+
+
+    private void initViews()
+    {
+        button = (Button) findViewById(R.id.button2);
+        latText = (TextView) findViewById(R.id.latitude);
+        lngText = (TextView) findViewById(R.id.longitude);
     }
 
     @Override
@@ -90,15 +109,7 @@ public class MainActivity extends AppCompatActivity
             mGoogleApiClient.disconnect();
         }
     }
-    private void initViews()
-    {
-        email_wrapper = (TextInputLayout) findViewById(R.id.user_email_wrapper);
-        password_wrapper = (TextInputLayout) findViewById(R.id.user_password_wrapper);
-        email = email_wrapper.getEditText();
-        password = password_wrapper.getEditText();
-        login = (Button) findViewById(R.id.btn_login);
-        link_register = (TextView) findViewById(R.id.link_signup);
-    }
+
 
 
 
@@ -155,6 +166,8 @@ public class MainActivity extends AppCompatActivity
             LocationServices.FusedLocationApi
                     .requestLocationUpdates(mGoogleApiClient, mLocationRequest, this);
 
+            mLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
+
             getCoords(LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient));
         }
     }
@@ -165,8 +178,12 @@ public class MainActivity extends AppCompatActivity
             double latitude = location.getLatitude();
             double longitude = location.getLongitude();
 
-            //latText.setText(getString(R.string.latitude_label, latitude));
-            //lngText.setText(getString(R.string.longitude_label, longitude));
+            postUserLocationToDatabase(String.valueOf(latitude),String.valueOf(longitude));
+
+            latText.setText(latitude+"");
+            lngText.setText(longitude+"");
+
+
         }
     }
 
@@ -203,6 +220,78 @@ public class MainActivity extends AppCompatActivity
     public static boolean isPermissionGranted(Context context, String permission) {
         return ContextCompat.checkSelfPermission(context, permission) ==
                 PackageManager.PERMISSION_GRANTED;
+    }
+
+
+    private void postUserLocationToDatabase(String latitude,String longitude)
+    {
+        FirebaseUser user = mAuth.getCurrentUser();
+
+        if(user!=null)
+        {
+            UserLocation mylocation = new UserLocation(user.getUid(),latitude,longitude);
+            final FirebaseDatabase database = FirebaseDatabase.getInstance();
+            DatabaseReference myRef = database.getReference().child("locations");
+
+
+            myRef.push().setValue(mylocation, new DatabaseReference.CompletionListener() {
+                @Override
+                public void onComplete(DatabaseError databaseError, DatabaseReference reference) {
+                    if (databaseError != null) {
+                        Toast.makeText(context,databaseError.toString(),Toast.LENGTH_SHORT).show();
+                    }else{
+                        Toast.makeText(context,"Location posted to database",Toast.LENGTH_SHORT).show();
+                    }
+                }
+            });
+
+        }else{
+            Toast.makeText(context,"Didnt worked",Toast.LENGTH_SHORT).show();
+        }
+    }
+
+
+    private static class UserLocation
+    {
+        String userId;
+        String latitude;
+        String longitude;
+
+        public UserLocation()
+        {
+
+        }
+
+        public UserLocation(String userId,String latitude,String longitude)
+        {
+            this.userId = userId;
+            this.latitude = latitude;
+            this.longitude = longitude;
+        }
+
+        public String getUserId() {
+            return userId;
+        }
+
+        public void setUserId(String userId) {
+            this.userId = userId;
+        }
+
+        public String getLatitude() {
+            return latitude;
+        }
+
+        public void setLatitude(String latitude) {
+            this.latitude = latitude;
+        }
+
+        public String getLongitude() {
+            return longitude;
+        }
+
+        public void setLongitude(String longitude) {
+            this.longitude = longitude;
+        }
     }
 
 }
