@@ -30,9 +30,15 @@ import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Logger;
+import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
+
+import java.util.HashMap;
 
 import constants.Constants;
 
@@ -223,58 +229,62 @@ public class MainActivity extends AppCompatActivity
     }
 
 
-    private void postUserLocationToDatabase(String latitude,String longitude)
+    private void postUserLocationToDatabase(final String latitude, final String longitude)
     {
-        FirebaseUser user = mAuth.getCurrentUser();
+        final FirebaseUser user = mAuth.getCurrentUser();
 
         if(user!=null)
         {
-            UserLocation mylocation = new UserLocation(user.getUid(),latitude,longitude);
-            final FirebaseDatabase database = FirebaseDatabase.getInstance();
-            DatabaseReference myRef = database.getReference().child("locations");
+            FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
+            final DatabaseReference reference = firebaseDatabase.getReference().child("drivers");
 
-
-            myRef.push().setValue(mylocation, new DatabaseReference.CompletionListener() {
-                @Override
-                public void onComplete(DatabaseError databaseError, DatabaseReference reference) {
-                    if (databaseError != null) {
-                        Toast.makeText(context,databaseError.toString(),Toast.LENGTH_SHORT).show();
-                    }else{
-                        Toast.makeText(context,"Location posted to database",Toast.LENGTH_SHORT).show();
-                    }
-                }
-            });
-
+            reference.child(user.getUid()).setValue(new
+                    DriverInfo(user.getUid(),"Driver "+user.getUid(),latitude,longitude));
         }else{
             Toast.makeText(context,"Didnt worked",Toast.LENGTH_SHORT).show();
+
         }
+
     }
 
 
-    private static class UserLocation
+    private static class DriverInfo
     {
-        String userId;
+        String driverId;
+        String name;
         String latitude;
         String longitude;
 
-        public UserLocation()
+
+        public DriverInfo()
         {
 
         }
 
-        public UserLocation(String userId,String latitude,String longitude)
+
+        public DriverInfo(String driverId,String name,String latitude,String longitude)
         {
-            this.userId = userId;
+            this.driverId = driverId;
+            this.name = name;
             this.latitude = latitude;
             this.longitude = longitude;
         }
 
-        public String getUserId() {
-            return userId;
+
+        public String getName() {
+            return name;
         }
 
-        public void setUserId(String userId) {
-            this.userId = userId;
+        public void setName(String name) {
+            this.name = name;
+        }
+
+        public String getDriverId() {
+            return driverId;
+        }
+
+        public void setDriverId(String driverId) {
+            this.driverId = driverId;
         }
 
         public String getLatitude() {
@@ -292,6 +302,8 @@ public class MainActivity extends AppCompatActivity
         public void setLongitude(String longitude) {
             this.longitude = longitude;
         }
+
     }
+
 
 }
