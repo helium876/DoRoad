@@ -4,4 +4,15 @@
     <string name="longitude_label">Longitude: %s</string>
     <string name="latitude_label">Latitude: %s</string>
     <string name="action_settings">Settings</string>
+
+    <string name="VehicleType1">JUTC</string>
+    <string name="VehicleType2">Taxi</string>
+    <string name="VehicleType3">Coaster Bus</string>
+
+
+    <string name="Route1">Downtown to Papine</string>
+    <string name="Route2">HWT to Papine</string>
+    <string name="Route3">Papine to Liguinea</string>
+    <string name="Route4">Papine to Cross Roads</string>
+    <string name="Route5">HWT to August Town</string>
 </resources>
