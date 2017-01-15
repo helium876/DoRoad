@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="VehicleTypeList">
+        <item>@string/VehicleType1</item>
+        <item>@string/VehicleType2</item>
+        <item>@string/VehicleType3</item>
+    </string-array>
+
+    <string-array name="RouteList">
+        <item>@string/Route1</item>
+        <item>@string/Route2</item>
+        <item>@string/Route3</item>
+        <item>@string/Route4</item>
+        <item>@string/Route5</item>
+    </string-array>
+
+
+
+</resources>

@@ -27,7 +27,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:text="Login"
+            android:text="Login Form"
             android:textAlignment="center"
             android:textSize="20sp" />
 
@@ -61,7 +61,100 @@
                 android:layout_height="wrap_content"
                 android:hint="Password"
                 android:inputType="textPassword" />
+
+
+
         </android.support.design.widget.TextInputLayout>
+        <!--First name label-->
+        <android.support.design.widget.TextInputLayout
+            android:id="@+id/user_first_name_wrapper"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:layout_marginTop="8dp">
+
+            <EditText
+                    android:id="@+id/input_name"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Driver first name"
+                android:inputType="textPersonName"
+
+                />
+
+        </android.support.design.widget.TextInputLayout>
+
+        <!--Last Name label-->
+        <android.support.design.widget.TextInputLayout
+            android:id="@+id/user_last_name_wrapper"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:layout_marginTop="8dp">
+
+            <EditText
+                android:id="@+id/input_last_name"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Driver last name"
+                android:inputType="textPersonName"
+
+                />
+        </android.support.design.widget.TextInputLayout>
+        <!--Route wrapper-->
+        <android.support.design.widget.TextInputLayout
+            android:id="@+id/user_route_wrapper"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:layout_marginTop="8dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Route:"
+                android:textSize="20sp"
+                />
+
+            <Spinner
+                android:id="@+id/SpinnerRoute"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:prompt="@string/RouteType"
+                android:entries="@array/RouteList"
+                >
+            </Spinner>
+
+
+        </android.support.design.widget.TextInputLayout>
+
+
+    <!--Vehicle Type-->
+        <android.support.design.widget.TextInputLayout
+            android:id="@+id/vehicle_type_wrapper"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:layout_marginTop="8dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Vehicle Type:"
+                android:textSize="20sp"
+                />
+            <Spinner
+                android:id="@+id/SpinnerVehicleType"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:prompt="@string/VehicleType"
+                android:entries="@array/VehicleTypeList">
+
+            </Spinner>
+
+        </android.support.design.widget.TextInputLayout>
+
+
 
         <android.support.v7.widget.AppCompatButton
             android:id="@+id/btn_login"
