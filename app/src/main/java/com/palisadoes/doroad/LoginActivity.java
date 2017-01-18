@@ -103,8 +103,8 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
     private void initViews()
     {
-        email_wrapper = (TextInputLayout) findViewById(R.id.user_email_wrapper);
-        password_wrapper = (TextInputLayout) findViewById(R.id.user_password_wrapper);
+        email_wrapper = (TextInputLayout) findViewById(R.id.email_wrapper);
+        password_wrapper = (TextInputLayout) findViewById(R.id.password_wrapper);
         email = email_wrapper.getEditText();
         password = password_wrapper.getEditText();
         login = (Button) findViewById(R.id.btn_login);

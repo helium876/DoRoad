@@ -3,6 +3,7 @@ package com.palisadoes.doroad;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -17,12 +18,16 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import constants.Constants;
 
@@ -36,35 +41,51 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
     private ProgressDialog progressDialog;
     private FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener mAuthListener;
-    private TextInputLayout email_wrapper, password_wrapper, name_wrapper;
-    private TextView link_login;
-    private Button register;
-    private EditText email, password, name;
+    private TextInputLayout mEmailWrapper, mPasswordWrapper, mFirstNameWrapper, mLastNameWrapper;
+    private TextInputLayout mConfirmWrapper;
+    private Spinner mVehichleTypeSpinner, mRouteSpinner;
+    private TextView mLinkLogin;
+    private Button mRegisterBtn;
+    private EditText mEmaiEdit, mPasswordEdit, mConfirmEdit, mFirstNameEdit,mLastNameEdit;
     private Context context;
+    private SharedPreferences mSharedPrefs;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register);
-        //    Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        //  setSupportActionBar(toolbar);
-        // getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        //getSupportActionBar().setDisplayShowHomeEnabled(true);
-        email_wrapper = (TextInputLayout) findViewById(R.id.user_email_wrapper_register);
-        password_wrapper = (TextInputLayout) findViewById(R.id.user_passowrd_wrapper_register);
-        name_wrapper = (TextInputLayout) findViewById(R.id.user_name_wrapper_register);
-        email = email_wrapper.getEditText();
-        password = password_wrapper.getEditText();
-        name = name_wrapper.getEditText();
 
         context = this;
 
-        register = (Button) findViewById(R.id.btn_signup);
-        link_login = (TextView) findViewById(R.id.link_login);
+        initViews();
 
-        register.setOnClickListener(this);
-        link_login.setOnClickListener(this);
+        mSharedPrefs = getSharedPreferences("SHARED_PREFS",Context.MODE_PRIVATE);
+
         mAuth = FirebaseAuth.getInstance();
+    }
+
+    private void initViews()
+    {
+        mEmailWrapper = (TextInputLayout) findViewById(R.id.user_email_wrapper_register);
+        mPasswordWrapper = (TextInputLayout) findViewById(R.id.user_password_wrapper);
+        mFirstNameWrapper = (TextInputLayout) findViewById(R.id.user_first_name_wrapper);
+        mLastNameWrapper = (TextInputLayout) findViewById(R.id.user_last_name_wrapper);
+        mConfirmWrapper = (TextInputLayout) findViewById(R.id.password_confirm_wrapper);
+
+        mVehichleTypeSpinner = (Spinner) findViewById(R.id.SpinnerVehicleType);
+        mRouteSpinner = (Spinner) findViewById(R.id.SpinnerRoute);
+
+
+        mEmaiEdit = mEmailWrapper.getEditText();
+        mPasswordEdit = mPasswordWrapper.getEditText();
+        mConfirmEdit = mConfirmWrapper.getEditText();
+        mFirstNameEdit = mFirstNameWrapper.getEditText();
+        mLastNameEdit = mLastNameWrapper.getEditText();
+        mRegisterBtn = (Button) findViewById(R.id.btn_signup);
+        mLinkLogin = (TextView) findViewById(R.id.link_login);
+
+        mRegisterBtn.setOnClickListener(this);
+        mLinkLogin.setOnClickListener(this);
     }
 
     @Override
@@ -79,23 +100,57 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
     }
 
     private void registerUser() {
-        String name_, email_, password_;
-        name_ = name.getText().toString();
-        email_ = email.getText().toString();
-        password_ = password.getText().toString();
+
+        final String firstname,email,lastname,password,confirm,vehicle_type,route;
+
+        firstname = mFirstNameEdit.getText().toString();
+        lastname = mLastNameEdit.getText().toString();
+        email = mEmaiEdit.getText().toString();
+        password = mPasswordEdit.getText().toString();
+        confirm = mConfirmEdit.getText().toString();
+        vehicle_type = mVehichleTypeSpinner.getSelectedItem().toString();
+        route = mRouteSpinner.getSelectedItem().toString();
+
+
         //checking if email and passwords are empty
-        if(TextUtils.isEmpty(email_)){
+        if(TextUtils.isEmpty(email)){
             Toast.makeText(this,"Please enter email",Toast.LENGTH_LONG).show();
             return;
         }
 
-        if(TextUtils.isEmpty(password_)){
+        if(!isEmailValid(email))
+        {
+            Toast.makeText(this,"Email is not valid",Toast.LENGTH_SHORT).show();
+        }
+
+        if(TextUtils.isEmpty(password)){
             Toast.makeText(this,"Please enter password",Toast.LENGTH_LONG).show();
             return;
         }
-        Log.d(Constants.LOGGER, " email: " + email_ + " password: " + password_);
+
+        if(TextUtils.isEmpty(confirm)){
+            Toast.makeText(this,"Please confirm password",Toast.LENGTH_LONG).show();
+            return;
+        }
+        if(TextUtils.isEmpty(firstname)){
+            Toast.makeText(this,"Please enter first name",Toast.LENGTH_LONG).show();
+            return;
+        }
+        if(TextUtils.isEmpty(lastname)){
+            Toast.makeText(this,"Please enter last name",Toast.LENGTH_LONG).show();
+            return;
+        }
+
+        if(!password.contentEquals(confirm))
+        {
+            Toast.makeText(this,"Password don't match",Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+
+        Log.d(Constants.LOGGER, " email: " + email + " password: " + password);
         showProgressDialog();
-        mAuth.createUserWithEmailAndPassword(email_, password_)
+        mAuth.createUserWithEmailAndPassword(email, password)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
@@ -110,6 +165,14 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
                         }else{
                             Toast.makeText(RegisterActivity.this, "user created.",
                                     Toast.LENGTH_SHORT).show();
+
+                            SharedPreferences.Editor editor = mSharedPrefs.edit();
+                            editor.putString("firstname",firstname);
+                            editor.putString("lastname",lastname);
+                            editor.putString("vehicle_type",vehicle_type);
+                            editor.putString("route",route);
+                            editor.commit();
+
                             Intent intent = new Intent(context,MainActivity.class);
                             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                             context.startActivity(intent);
@@ -148,6 +211,26 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
             default:
                 break;
         }
+    }
+
+    /**
+     * method is used for checking valid email id format.
+     *
+     * @param email
+     * @return boolean true for valid false for invalid
+     */
+    public static boolean isEmailValid(String email) {
+        boolean isValid = false;
+
+        String expression = "^[\\w\\.-]+@([\\w\\-]+\\.)+[A-Z]{2,4}$";
+        CharSequence inputStr = email;
+
+        Pattern pattern = Pattern.compile(expression, Pattern.CASE_INSENSITIVE);
+        Matcher matcher = pattern.matcher(inputStr);
+        if (matcher.matches()) {
+            isValid = true;
+        }
+        return isValid;
     }
 
 }

@@ -9,6 +9,9 @@
     <string name="VehicleType2">Taxi</string>
     <string name="VehicleType3">Coaster Bus</string>
 
+    <string name="RouteType">Select Route</string>
+    <string name="VehicleType">Select Vehicle</string>
+
 
     <string name="Route1">Downtown to Papine</string>
     <string name="Route2">HWT to Papine</string>
