@@ -4,6 +4,7 @@ import android.Manifest;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationManager;
@@ -56,6 +57,8 @@ public class MainActivity extends AppCompatActivity
     private Button button;
     private Location mLocation;
     private LocationRequest mLocationRequest;
+    private SharedPreferences mSharedPrefs;
+    private String mFirstName,mLastName,mVehicleType,mRoute;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -88,6 +91,9 @@ public class MainActivity extends AppCompatActivity
 
             }
         };
+
+        mSharedPrefs = getSharedPreferences("SHARED_PREFS",Context.MODE_PRIVATE);
+        getDriverProfile();
         checkPermissions();
 
         initViews();
@@ -98,6 +104,14 @@ public class MainActivity extends AppCompatActivity
                getCoords(mLocation);
             }
         });
+    }
+
+    private void getDriverProfile()
+    {
+        mFirstName = mSharedPrefs.getString("firstname",null);
+        mLastName = mSharedPrefs.getString("lastname",null);
+        mVehicleType = mSharedPrefs.getString("vehicle_type",null);
+        mRoute = mSharedPrefs.getString("route",null);
     }
 
 
@@ -233,13 +247,35 @@ public class MainActivity extends AppCompatActivity
     {
         final FirebaseUser user = mAuth.getCurrentUser();
 
+
         if(user!=null)
         {
             FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
             final DatabaseReference reference = firebaseDatabase.getReference().child("drivers");
 
-            reference.child(user.getUid()).setValue(new
-                    DriverInfo(user.getUid(),"Driver "+user.getUid(),latitude,longitude));
+            reference.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    if(dataSnapshot.hasChild(user.getUid()))
+                    {
+                        HashMap<String,Object> hashMap = new HashMap();
+                        hashMap.put("latitude",latitude);
+                        hashMap.put("longitude",longitude);
+                        reference.child(user.getUid()).updateChildren(hashMap);
+                    }else{
+                        reference.child(user.getUid()).setValue(new
+                                DriverInfo(user.getUid(),
+                                new DriverProfile(mFirstName,mLastName,mVehicleType,mRoute),latitude,longitude));
+                    }
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+
+                }
+            });
+
+
         }else{
             Toast.makeText(context,"Didnt worked",Toast.LENGTH_SHORT).show();
 
@@ -251,7 +287,7 @@ public class MainActivity extends AppCompatActivity
     private static class DriverInfo
     {
         String driverId;
-        String name;
+        DriverProfile driverProfile;
         String latitude;
         String longitude;
 
@@ -262,21 +298,20 @@ public class MainActivity extends AppCompatActivity
         }
 
 
-        public DriverInfo(String driverId,String name,String latitude,String longitude)
+        public DriverInfo(String driverId,DriverProfile driverProfile,String latitude,String longitude)
         {
             this.driverId = driverId;
-            this.name = name;
+            this.driverProfile = driverProfile;
             this.latitude = latitude;
             this.longitude = longitude;
         }
 
-
-        public String getName() {
-            return name;
+        public DriverProfile getDriverProfile() {
+            return driverProfile;
         }
 
-        public void setName(String name) {
-            this.name = name;
+        public void setDriverProfile(DriverProfile driverProfile) {
+            this.driverProfile = driverProfile;
         }
 
         public String getDriverId() {
@@ -303,6 +338,54 @@ public class MainActivity extends AppCompatActivity
             this.longitude = longitude;
         }
 
+    }
+
+    public static class DriverProfile
+    {
+        String firstname;
+        String lastname;
+        String vehicle_type;
+        String route;
+
+        public DriverProfile(String firstname,String lastname,String vehicle_type,String route)
+        {
+            this.firstname = firstname;
+            this.lastname = lastname;
+            this.vehicle_type = vehicle_type;
+            this.route = route;
+        }
+
+        public String getFirstname() {
+            return firstname;
+        }
+
+        public void setFirstname(String firstname) {
+            this.firstname = firstname;
+        }
+
+        public String getLastname() {
+            return lastname;
+        }
+
+        public void setLastname(String lastname) {
+            this.lastname = lastname;
+        }
+
+        public String getVehicle_type() {
+            return vehicle_type;
+        }
+
+        public void setVehicle_type(String vehicle_type) {
+            this.vehicle_type = vehicle_type;
+        }
+
+        public String getRoute() {
+            return route;
+        }
+
+        public void setRoute(String route) {
+            this.route = route;
+        }
     }
 
 
